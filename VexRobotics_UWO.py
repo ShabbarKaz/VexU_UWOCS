@@ -172,8 +172,6 @@ def moveRight():
     left_motors.spin(FORWARD,10,VOLT)
     right_motors.spin(REVERSE,10,VOLT)
 
-
-
 def rightWhileForward():
 
     left_motors.spin(FORWARD,10,VOLT)
@@ -183,6 +181,17 @@ def leftWhileForward():
 
     left_motors.spin(FORWARD,5,VOLT)
     right_motors.spin(FORWARD,10,VOLT)
+
+def rightWhileBack():
+    brain.screen.print("move right while forward")
+    
+    left_motors.spin(REVERSE,10,VOLT)
+    right_motors.spin(REVERSE,5,VOLT)    
+
+def leftWhileBack():
+    brain.screen.print("move left while forward")
+    left_motors.spin(REVERSE,5,VOLT)
+    right_motors.spin(REVERSE,10,VOLT)
 
 
 
