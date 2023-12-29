@@ -5,16 +5,6 @@ import urandom
 # Brain should be defined by default
 brain=Brain()
 
-# Robot configuration code
-controller_1 = Controller(PRIMARY)
-motor_group_1_motor_a = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
-motor_group_1_motor_b = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
-motor_group_1 = MotorGroup(motor_group_1_motor_a, motor_group_1_motor_b)
-motor_group_3_motor_a = Motor(Ports.PORT3, GearSetting.RATIO_18_1, True)
-motor_group_3_motor_b = Motor(Ports.PORT4, GearSetting.RATIO_18_1, True)
-motor_group_3 = MotorGroup(motor_group_3_motor_a, motor_group_3_motor_b)
-
-
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
 
@@ -104,7 +94,13 @@ def usercontrolled():
 
         elif(controller.buttonUp.pressing() and controller.buttonY.pressing() ):
             leftWhileForward()
-        
+
+        elif(controller.buttonDown.pressing() and controller.buttonA.pressing()):
+            rightWhileBack()
+
+        elif(controller.buttonDown.pressing() and controller.buttonY.pressing() ):
+            leftWhileBack()    
+           
         elif (controller.buttonUp.pressing()):
             moveForward()
             brain.screen.print("Up button pressed")
@@ -122,8 +118,9 @@ def usercontrolled():
         elif(controller.buttonR2.pressing()):   
             moveBackward()
         else:
-            left_motors.stop()
-            right_motors.stop()    
+              left_motors.spin(FORWARD,0,VOLT)
+              right_motors.spin(Reverse,0,VOLT)
+            
 
 
 
