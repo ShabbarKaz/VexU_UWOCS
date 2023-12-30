@@ -16,12 +16,12 @@ brain Brain;
 
 
 // START V5 MACROS
-#define waitUntil(condition)                                                   
-  do {                                                                         
-    wait(5, msec);                                                             
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
   } while (!(condition))
 
-#define repeat(iterations)                                                     
+#define repeat(iterations)                                                     \
   for (int iterator = 0; iterator < iterations; iterator++)
 // END V5 MACROS
 
@@ -35,6 +35,14 @@ motor_group left_motors = motor_group(left_motor1, left_motor2);
 motor right_motor1 = motor(PORT3, ratio18_1, true);
 motor right_motor2 = motor(PORT4, ratio18_1, true);
 motor_group right_motors = motor_group(right_motor1, right_motor2);
+
+motor lifting_arm1 = motor(PORT5, ratio36_1, true);
+motor lifting_arm2 = motor(PORT6, ratio36_1, true);
+motor_group lifiting_arms = motor_group(lifting_arm1,lifting_arm2);
+
+motor wings =  motor(PORT7, ratio18_1,true);
+motor catapult = motor (PORT8, ratio18_1,true );
+
 
 
 
@@ -68,20 +76,17 @@ bool RemoteControlCodeEnabled = true;
 // Allows for easier use of the VEX Library
 using namespace vex;
 
+
+
 void moveForward() {
-     Brain.Screen.print("Move forward ");
-
-//Drivetrain.setDriveVelocity(50,percent);
-
-
+Brain.Screen.print("Move forward ");
 left_motors.spin(reverse,100,percent);
 right_motors.spin(reverse,100,percent);
 
 }
 
 void moveBackward() {
-   Brain.Screen.print("Move back ");
-//Drivetrain.setDriveVelocity(-50,percent);
+Brain.Screen.print("Move back ");
  left_motors.spin(forward,100,percent);
  right_motors.spin(forward,100,percent);
 }
@@ -102,18 +107,14 @@ void moveRight() {
 
 void rightWhileForward() {
    Brain.Screen.print("Move forward right ");
-    // left_motors.spin(forward, 10, percent);
-    // right_motors.spin(reverse, 5, percent );
-    left_motors.spin(reverse,70,percent);
+    left_motors.spin(reverse,95,percent);
     right_motors.spin(reverse,30,percent);
 }
 
 void leftWhileForward() {
    Brain.Screen.print("Move left forward ");
-    // left_motors.spin(forward, 5, volt);
-    // right_motors.spin(forward, 10, volt);
     left_motors.spin(reverse,30,percent);
-    right_motors.spin(reverse,70,percent);
+    right_motors.spin(reverse,95,percent);
 }
 
 void rightWhileBack() {
@@ -129,9 +130,45 @@ void leftWhileBack() {
     right_motors.spin(forward, 95, percent);
  }
 
+
+
+void openWings(){
+ wings.spin(forward,120,percent);
+  // if(wingsOpen){
+  //   Brain.Screen.print("opening wings");
+  //  //wings.spinFor(forward,1080,degrees);
+  // }
+  //    Brain.Screen.print("closing wings");
+  //   //wings.spinFor(reverse,1080,degrees);
+  // }
+} 
+
+void closeWings(){
+  wings.spin(reverse,120,percent);
+}
+
+
+//basically when this will keep the the motor running backwards and we should be able to turn it off an on
+void launchCatapult(bool catapultOn){
+  if(catapultOn){
+     Brain.Screen.print("catapult On");
+catapult.spin(reverse,5,volt);
+  }
+else{
+   Brain.Screen.print(" catapultof");
+  catapult.setStopping(coast);
+  catapult.stop();
+}
+}
+
 int main() {
   
+  bool catapultOn = false;
+
+
   while(true){
+
+    // first set off if statment should be used for movment
     if (Controller.ButtonUp.pressing() && Controller.ButtonA.pressing()) {
         rightWhileForward();
     } else if (Controller.ButtonUp.pressing() && Controller.ButtonY.pressing()) {
@@ -153,17 +190,36 @@ int main() {
        // Brain.screen.print("A button pressed");
         moveRight();
     } else if (Controller.ButtonL2.pressing()) {
-        moveForward();
+      closeWings();
     } else if (Controller.ButtonR2.pressing()) {
-        moveBackward();
+      openWings();
+    }
+    else if(Controller.ButtonRight.pressing()){ // need to test this with the catapult
+    catapultOn = !catapultOn;
+    launchCatapult(catapultOn);
     } else {
-    //Drivetrain.setStopping(brake);
     left_motors.setStopping(brake);
     right_motors.setStopping(brake);
+    wings.setStopping(hold);
     left_motors.stop();
     right_motors.stop();
+    wings.stop();
 
 
+//second set of iff statments should be used for wings 
+//lets check if we can open the wings while moving forward. 
+    //  if (Controller.ButtonL2.pressing()) {
+    //   closeWings();
+    // } else if (Controller.ButtonR2.pressing()) {
+    //   openWings();
+    // else {
+    //    wings.setStopping(hold);
+    //    wings.stop();
+    // }
+
+//third set of if statments should be for the launcher
+
+// the forth set of if statments should be for the lifting arm
 
     }
   }
