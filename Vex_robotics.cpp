@@ -44,9 +44,6 @@ motor wings =  motor(PORT7, ratio18_1,true);
 motor catapult = motor (PORT8, ratio18_1,true );
 
 
-
-
-
 // Helper to make playing sounds from the V5 in VEXcode easier and
 // keeps the code cleaner by making it clear what is happening.
 void playVexcodeSound(const char *soundName) {
@@ -133,7 +130,16 @@ void leftWhileBack() {
 
 
 void openWings(){
- wings.spin(forward,120,percent);
+
+  if(wings.position(turns) < 4.5){
+     wings.spin(forward,120,percent);
+  } 
+  else {
+    Brain.Screen.print("open wings else");
+     wings.spin(forward,0,percent);
+  }
+
+
   // if(wingsOpen){
   //   Brain.Screen.print("opening wings");
   //  //wings.spinFor(forward,1080,degrees);
@@ -144,7 +150,13 @@ void openWings(){
 } 
 
 void closeWings(){
-  wings.spin(reverse,120,percent);
+   if(wings.position(turns) < 5 && wings.position(turns) > 0 ){
+     wings.spin(reverse,120,percent);
+  } 
+  else {
+     Brain.Screen.print("close wings else");
+     wings.spin(reverse,0,percent);
+  }
 }
 
 
