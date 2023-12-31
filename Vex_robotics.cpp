@@ -25,7 +25,6 @@ brain Brain;
   for (int iterator = 0; iterator < iterations; iterator++)
 // END V5 MACROS
 
-
 // Robot configuration code.
 controller Controller = controller(primary);
 motor left_motor1 = motor(PORT1, ratio18_1, false);
@@ -37,11 +36,13 @@ motor right_motor2 = motor(PORT4, ratio18_1, true);
 motor_group right_motors = motor_group(right_motor1, right_motor2);
 
 motor lifting_arm1 = motor(PORT5, ratio36_1, true);
-motor lifting_arm2 = motor(PORT6, ratio36_1, true);
+motor lifting_arm2 = motor(PORT6, ratio36_1, false);
 motor_group lifiting_arms = motor_group(lifting_arm1,lifting_arm2);
 
 motor wings =  motor(PORT7, ratio18_1,true);
 motor catapult = motor (PORT8, ratio18_1,true );
+
+
 
 
 // Helper to make playing sounds from the V5 in VEXcode easier and
@@ -123,8 +124,18 @@ void rightWhileBack() {
 
 void leftWhileBack() {
     // brain.screen.print("Move left while forward");
-     left_motors.spin(forward, 30, percent);
-    right_motors.spin(forward, 95, percent);
+     left_motors.spin(forward, 95, percent);
+    right_motors.spin(forward, 30, percent);
+ }
+
+void moveForwardClaw(){
+  Brain.Screen.print("move claw up");
+  lifiting_arms.spin(forward,50,percent);
+ }
+
+void moveBackwardClaw(){
+  Brain.Screen.print("move claw down");
+  lifiting_arms.spin(reverse,50,percent);
  }
 
 
@@ -177,31 +188,63 @@ int main() {
   
   bool catapultOn = false;
 
+   while(true){
 
-  while(true){
+  //   // first set off if statment should be used for movment
+  //   if (Controller.ButtonUp.pressing() && Controller.ButtonA.pressing()) {
+  //       rightWhileForward();
+  //   } else if (Controller.ButtonUp.pressing() && Controller.ButtonY.pressing()) {
+  //       leftWhileForward();
+  //   } else if (Controller.ButtonDown.pressing() && Controller.ButtonA.pressing()) {
+  //       rightWhileBack();
+  //   } else if (Controller.ButtonDown.pressing() && Controller.ButtonY.pressing()) {
+  //       leftWhileBack();
+  //   } else if (Controller.ButtonUp.pressing()) {
+  //       moveForward();
+  //       //Brain.screen.print("Up button pressed");
+  //   } else if (Controller.ButtonDown.pressing()) {
+  //      // Brain.screen.print("Down button pressed");
+  //       moveBackward();
+  //   } else if (Controller.ButtonY.pressing()) {
+  //      // Brain.screen.print("Y button pressed");
+  //       moveLeft();
+  //   } else if (Controller.ButtonA.pressing()) {
+  //      // Brain.screen.print("A button pressed");
+  //       moveRight();
+  //      } else {
+  //   left_motors.setStopping(brake);
+  //   right_motors.setStopping(brake);
+  //   wings.setStopping(hold);
+  //   left_motors.stop();
+  //   right_motors.stop();
+  //   }
+/////////////////////////////////////////////////////////////
 
-    // first set off if statment should be used for movment
-    if (Controller.ButtonUp.pressing() && Controller.ButtonA.pressing()) {
-        rightWhileForward();
-    } else if (Controller.ButtonUp.pressing() && Controller.ButtonY.pressing()) {
-        leftWhileForward();
-    } else if (Controller.ButtonDown.pressing() && Controller.ButtonA.pressing()) {
-        rightWhileBack();
-    } else if (Controller.ButtonDown.pressing() && Controller.ButtonY.pressing()) {
-        leftWhileBack();
-    } else if (Controller.ButtonUp.pressing()) {
-        moveForward();
-        //Brain.screen.print("Up button pressed");
-    } else if (Controller.ButtonDown.pressing()) {
-       // Brain.screen.print("Down button pressed");
-        moveBackward();
-    } else if (Controller.ButtonY.pressing()) {
-       // Brain.screen.print("Y button pressed");
-        moveLeft();
-    } else if (Controller.ButtonA.pressing()) {
-       // Brain.screen.print("A button pressed");
-        moveRight();
-    } else if (Controller.ButtonL2.pressing()) {
+
+  if (Controller.Axis1.position() > 0 && )
+  else if(Controller.Axis3.position() > 0 || Controller.Axis3.position() < 0 ){
+   right_motors.spin(reverse,Controller.Axis3.position(),percent);
+   left_motors.spin(reverse,Controller.Axis3.position(),percent);
+ }
+ else if(Controller.Axis1.position() > 0 ||  Controller.Axis1.position() < 0 ){
+     right_motors.spin(forward,Controller.Axis1.position(),percent);
+   left_motors.spin(reverse,Controller.Axis1.position(),percent);
+ }
+       else {
+    left_motors.setStopping(brake);
+    right_motors.setStopping(brake);
+    wings.setStopping(hold);
+    left_motors.stop();
+    right_motors.stop();
+    }
+
+
+/////////////////////////////////////////////////////////////////
+
+
+
+    //set of if statments for the wings and the catapult and moving the claw
+    if (Controller.ButtonL2.pressing()) {
       closeWings();
     } else if (Controller.ButtonR2.pressing()) {
       openWings();
@@ -209,30 +252,16 @@ int main() {
     else if(Controller.ButtonRight.pressing()){ // need to test this with the catapult
     catapultOn = !catapultOn;
     launchCatapult(catapultOn);
-    } else {
-    left_motors.setStopping(brake);
-    right_motors.setStopping(brake);
-    wings.setStopping(hold);
-    left_motors.stop();
-    right_motors.stop();
+    } 
+    else if( Controller.ButtonR1.pressing()){
+    moveForwardClaw();
+    }
+    else if(Controller.ButtonL1.pressing()){
+    moveBackwardClaw();
+    }
+    else {
     wings.stop();
-
-
-//second set of iff statments should be used for wings 
-//lets check if we can open the wings while moving forward. 
-    //  if (Controller.ButtonL2.pressing()) {
-    //   closeWings();
-    // } else if (Controller.ButtonR2.pressing()) {
-    //   openWings();
-    // else {
-    //    wings.setStopping(hold);
-    //    wings.stop();
-    // }
-
-//third set of if statments should be for the launcher
-
-// the forth set of if statments should be for the lifting arm
-
+    lifiting_arms.stop(); 
     }
   }
   return 0; 
