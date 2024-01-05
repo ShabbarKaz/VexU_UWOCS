@@ -131,7 +131,7 @@ void leftWhileBack() {
  }
 
 void moveForwardClaw(){
-  if(lifiting_arms.position(turns) < 3){
+  if(lifiting_arms.position(turns) < 2){
     Brain.Screen.print("move claw up");
     lifiting_arms.spin(forward,50,percent);
   }
