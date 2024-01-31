@@ -93,6 +93,97 @@ void infeedSystemReverse(){
  infeedSystem.spin(reverse,95,percent);
 }
 
+void infeedSystemStop(){
+   infeedSystem.spin(reverse,0,percent);
+}
+
+//!!!!This could be changed to take advantage of the driveTrain function driveFor()!!!!
+void moveForward(int distance){
+  right_motor1.spin(reverse,100,percent);
+  left_motor1.spin(reverse,100,percent);
+  wait(distance, sec);
+  
+  //Stop motors
+  right_motor1.spin(reverse,0,percent);
+  left_motor1.spin(reverse,0,percent);
+}
+void moveBack(int distance){
+  right_motor1.spin(reverse,-100,percent);
+  left_motor1.spin(reverse,-100,percent);
+  wait(distance, sec);
+  
+  //Stop motors
+  right_motor1.spin(reverse,0,percent);
+  left_motor1.spin(reverse,0,percent);
+}
+
+void turnRight(int degrees){
+  //Use GPS to track rotation of robot
+
+  //Stop motors
+  right_motor1.spin(reverse,0,percent);
+  left_motor1.spin(reverse,0,percent);
+}
+
+void turnLeft(int degrees){
+  //Use GPS to track rotation of robot
+
+  //Stop motors
+  right_motor1.spin(reverse,0,percent);
+  left_motor1.spin(reverse,0,percent);
+}
+
+void grabTriball(){
+  infeedSystemForward()
+  wait(1, sec);
+  infeedSystemStop()
+}
+
+void releaseTriball(){
+  infeedSystemReverse()
+  wait(1, sec);
+  infeedSystemStop()
+}
+
+//Code for the autonomous portion
+void autonomousMode(){
+    //Robot moves to the side of our goal
+      moveForward(10);
+      turnLeft(45);
+      moveForward(10);
+      turnLeft(45);
+      moveForward(5);
+
+    //Scores initial triball
+      releaseTriball()
+
+    //Move to alliance triball 
+      turnLeft(160);
+      moveForward(5);
+      turnLeft(80);
+      moveForward(5);
+
+    //Grab alliance triball 
+      grabTriball();
+
+    //Move to goal
+      turnLeft(100);
+      moveForward(10);
+
+    //Score alliance triball
+      releaseTriball();
+
+    //Move to defend 
+      moveBack(3);
+      turnLeft(90);
+      moveForward(5);
+
+    //Defense strategy
+      ????
+
+    //Move to touch elevation bar
+}
+
 
 int main() {
   
