@@ -119,6 +119,48 @@ void Stop() {
     all_motors.stop();
 }
 
+void autonomousMode(){
+  //Move to middle barrier
+    MoveForward(10);
+  //Throw initial triball using catapult
+    //Catapult triball
+
+  //Move to alliance triball
+    MoveBackward(7);
+    RotateRight(120);
+    MoveForward(10);
+  //Grab alliance triball
+    //Extend grabber arm
+    MoveBackward(2);
+    RotateRight(30);
+
+  //Move to side of goal 
+    MoveForward(5);
+
+  //Score alliance triball
+    //Raise grabber arm
+    MoveForward(2);
+  //Move towards dropped triball
+    MoveBackward(2);
+    RotateRight(135);
+    MoveForward(10);
+  //Pickup dropped triball
+    //Extend grabber arm
+    RotateRight(180);
+  //Move towards side goal
+    MoveForward(10);
+
+  //Score second triball
+    //Raise grabber arm
+    MoveForward(2)
+
+  //Other
+    //????
+
+  //Return to pole
+
+}
+
 int main() {
     MoveForward(100);
     Stop();
