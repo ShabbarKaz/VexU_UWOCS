@@ -1,5 +1,3 @@
-Robot2 Code
-
 #pragma region VEXcode Generated Robot Configuration
 // Make sure all required headers are included.
 #include <stdio.h>
@@ -7,6 +5,7 @@ Robot2 Code
 #include <stdbool.h>
 #include <math.h>
 #include <string.h>
+
 
 #include "vex.h"
 
@@ -26,12 +25,28 @@ brain Brain;
   for (int iterator = 0; iterator < iterations; iterator++)
 // END V5 MACROS
 
+
 // Robot configuration code.
-controller Controller = controller(primary);
-motor left_motor1 = motor(PORT1, ratio18_1, false);
-motor right_motor1 = motor(PORT2, ratio18_1, true);
-motor wings =  motor(PORT3, ratio18_1,true);
-motor infeedSystem = motor(PORT4, ratio18_1,true); 
+motor LeftDriveSmart = motor(PORT1, ratio18_1, false);
+motor RightDriveSmart = motor(PORT2, ratio18_1, true);
+gps DrivetrainGPS = gps(PORT3, 0.00, 0.00, mm, 180);
+smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainGPS, 319.19, 320, 40, mm, 18);
+
+
+void calibrateDrivetrain() {
+  wait(200, msec);
+  Brain.Screen.print("Calibrating");
+  Brain.Screen.newLine();
+  Brain.Screen.print("GPS");
+  DrivetrainGPS.calibrate();
+  while (DrivetrainGPS.isCalibrating()) {
+    wait(25, msec);
+  }
+
+  // Clears the screen and returns the cursor to row 1, column 1.
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+}
 
 // Helper to make playing sounds from the V5 in VEXcode easier and
 // keeps the code cleaner by making it clear what is happening.
@@ -40,134 +55,148 @@ void playVexcodeSound(const char *soundName) {
   wait(5, msec);
 }
 
-
-
-// define variable for remote controller enable/disable
-bool RemoteControlCodeEnabled = true;
-
 #pragma endregion VEXcode Generated Robot Configuration
 
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       {author}                                                  */
-/*    Created:      {date}                                                    */
-/*    Description:  V5 project                                                */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
- Wiring guide robot 1 :
-left motor : PORT1
-right motor: PORT2 
-wings: PORT3
-infeed : PORT4 
-
----------------------------------------------------------------------------------*/
-
-
-
-
-// Include the V5 Library
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
 #include "vex.h"
-  
-// Allows for easier use of the VEX Library
+
 using namespace vex;
 
-void openWings(){
+// Brain should be defined by default
+brain Brain;
 
-  if(wings.position(turns) < 4.5){
-     wings.spin(forward,120,percent);
-  } 
-  else {
-    Brain.Screen.print("open wings else");
-     wings.spin(forward,0,percent);
+controller Controller = controller(primary);
+motor left_motor = motor(PORT8, ratio18_1, false);
+motor right_motor = motor(PORT7, ratio18_1, true);
+drivetrain all_motors = drivetrain(left_motor, right_motor, 319.19, 279.4, 152.4, mm, 0.714285714);
+motor infeed_motor = motor(PORT4, ratio18_1,true); 
+optical Optical5 = optical(PORT5);
+
+gps GPS = gps(PORT8, 80.00, -240.00, mm, 180);
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+void calibrateDrivetrain() {
+  wait(200, msec);
+  Brain.Screen.print("Calibrating");
+  Brain.Screen.newLine();
+  Brain.Screen.print("GPS");
+  GPS.calibrate();
+  while (GPS.isCalibrating()) {
+    wait(25, msec);
   }
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
 }
 
-void closeWings(){
-   if(wings.position(turns) < 5 && wings.position(turns) > 0 ){
-     wings.spin(reverse,120,percent);
-  } 
-  else {
-     Brain.Screen.print("close wings else");
-     wings.spin(reverse,0,percent);
-  }
+// Helper to make playing sounds from the V5 in VEXcode easier and
+// keeps the code cleaner by making it clear what is happening.
+void playVexcodeSound(const char *soundName) {
+  printf("VEXPlaySound:%s\n", soundName);
+  wait(5, msec);
 }
 
-void infeedSystemForward(){
-   Brain.Screen.print("infeed forward ");
- infeedSystem.spin(forward,95,percent);
+string sectors[6][6] = {{"B1","B2","B3","C3","C2","C1"},
+                        {"B4","B5","B6","C6","C5","C4"},
+                        {"B7","B8","B9","C9","C8","C7"},
+                        {"A7","A8","A9","D9","D8","D7"},
+                        {"A4","A5","A6","D6","D5","D4"},
+                        {"A1","A2","A3","D3","D2","D1"}};
+
+void GPS_GetSector() {
+  return sectors[GPS.xPosition(mm)/30][GPS.xPosition(mm)/30];
 }
 
-void infeedSystemReverse(){
-   Brain.Screen.print("infeed reverse ");
- infeedSystem.spin(reverse,95,percent);
+// Brain methods
+void Brain_Print() { Brain.Screen.print("X"); }
+
+// Infeed methods
+void Infeed_Collect(){ 
+  infeed_motor.spin(forward,95,percent); 
+}
+void Infeed_Release(){ 
+  infeed_motor.spin(reverse,95,percent);
+}
+void Infeed_Stop() { 
+  infeed_motor.stop(); 
 }
 
+// Wheel methods
+void Wheels_MoveForward(int x) { 
+  all_motors.driveFor(forward,x,inches,143,rpm); 
+}
+void Wheels_MoveBackward(int x) { 
+  all_motors.driveFor(forward,x,inches,143,rpm); 
+}
+void Wheels_RotateLeft(int x) { 
+  all_motors.turnFor(left,x,degrees); 
+}
+void Wheels_RotateRight(int x) { 
+  all_motors.turnFor(right,x,degrees); 
+}
+void Wheels_Stop() { 
+  all_motors.stop(); 
+}
+
+void autonomous_code() {
+    //Robot moves to the side of our goal
+      Wheels_MoveForward(10);
+      Wheels_RotateLeft(45);
+      Wheels_MoveForward(10);
+      Wheels_RotateLeft(45);
+      Wheels_MoveForward(5);
+
+    //Scores initial triball
+      Infeed_Release();
+
+    //Move to alliance triball 
+      Wheels_RotateLeft(160);
+      Wheels_MoveForward(5);
+      Wheels_RotateLeft(80);
+      Wheels_MoveForward(5);
+
+    //Grab alliance triball 
+      Infeed_Collect();
+
+    //Move to goal
+      Wheels_RotateLeft(100);
+      Wheels_MoveForward(10);
+
+    //Score alliance triball
+      Infeed_Release();
+
+    //Move to defend 
+      Wheels_MoveBackward(3);
+      Wheels_RotateLeft(90);
+      Wheels_MoveForward(5);
+
+    //Defense strategy
+      // Repeat the strategy of:
+      // Rotate to general direction of triball
+      // Move to the triball
+      // Activate the infeed
+      // Rotate to the goal
+      // Move to the goal
+      // Release the triball
+      // Rotate 180 degrees
+      // Repeat.
+
+    //Move to touch elevation bar
+      // ????
+}
 
 int main() {
-  
-  bool catapultOn = false;
-  bool TakeTryBallIn = true; 
-
-   while(true){
-
-if (Controller.Axis1.position() > 0 && (Controller.Axis3.position() > 0 ||  Controller.Axis3.position() < 0))
-  {
-    right_motor1.spin(reverse,Controller.Axis3.position() * (115 - Controller.Axis1.position()) * 0.01,percent);
-    left_motor1.spin(reverse,Controller.Axis3.position(),percent);
-  }
-  else if (Controller.Axis1.position() < 0 && (Controller.Axis3.position() > 0 ||  Controller.Axis3.position() < 0))
-  {
-    left_motor1.spin(reverse,Controller.Axis3.position() * (115 + Controller.Axis1.position()) * 0.01,percent);
-    right_motor1.spin(reverse,Controller.Axis3.position(),percent);
-    
-  }
-//forwads and backwards
-  else if(Controller.Axis3.position() > 0 || Controller.Axis3.position() < 0 ){
-   right_motor1.spin(reverse,Controller.Axis3.position(),percent);
-   left_motor1.spin(reverse,Controller.Axis3.position(),percent);
- }
-
- //move left and right 
- else if(Controller.Axis1.position() > 0 ||  Controller.Axis1.position() < 0 ){
-     right_motor1.spin(forward,Controller.Axis1.position(),percent);
-   left_motor1.spin(reverse,Controller.Axis1.position(),percent);
- }
-       else {
-    left_motor1.setStopping(brake);
-    right_motor1.setStopping(brake);
-    wings.setStopping(hold);
-    left_motor1.stop();
-    right_motor1.stop();
-    }
-
-/////////////////////////////////////////////////////////////////
-
-
-    //set of if statments for the wings sepereate to allow for opening wings while moving
-    if (Controller.ButtonL2.pressing()) {
-      closeWings();
-    } else if (Controller.ButtonR2.pressing()) {
-      openWings();
-    }else {
-    wings.stop();
-    }
-
-    if (Controller.ButtonL1.pressing()){
-      infeedSystemReverse();
-    } else if(Controller.ButtonR1.pressing()){
-      infeedSystemForward();
-    }else{ 
-      infeedSystem.setStopping(brake);
-      infeedSystem.stop();
-    }
-//////////////////////////////////////////////////////////////////////
-
-
- return 0; 
-
-
-  }
+  autonomous_code();
+  return 0;
 }
