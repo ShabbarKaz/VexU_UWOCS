@@ -117,6 +117,55 @@ void Wheels_Stop() {
   all_motors.stop(); 
 }
 
+void grabTriball(){
+  Infeed_Collect();
+  Infeed_Stop();
+}
+
+void releaseTriball(){
+  Infeed_Release();
+  Infeed_Stop();
+}
+
+//Code for the autonomous portion
+void autonomousMode(){
+    //Robot moves to the side of our goal
+      Wheels_MoveForward(10);
+      Wheels_RotateLeft(45);
+      Wheels_MoveForward(10);
+      Wheels_RotateLeft(45);
+      Wheels_MoveForward(5);
+
+    //Scores initial triball
+      releaseTriball()
+
+    //Move to alliance triball 
+      Wheels_RotateLeft(160);
+      Wheels_MoveForward(5);
+      Wheels_RotateLeft(80);
+      Wheels_MoveForward(5);
+
+    //Grab alliance triball 
+      grabTriball();
+
+    //Move to goal
+      Wheels_RotateLeft(100);
+      Wheels_MoveForward(10);
+
+    //Score alliance triball
+      releaseTriball();
+
+    //Move to defend 
+      Wheels_MoveBackward(3);
+      Wheels_RotateLeft(90);
+      Wheels_MoveForward(5);
+
+    //Defense strategy
+      ????
+
+    //Move to touch elevation bar
+}
+
 int main() {
     Wheels_MoveForward(50);
     Wheels_RotateRight(365);
