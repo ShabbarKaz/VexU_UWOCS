@@ -140,19 +140,15 @@ void autonomousMode(){
   //Score alliance triball
     //Raise grabber arm
     MoveForward(2);
-  //Move towards dropped triball
+  //Move towards middle triball
     MoveBackward(2);
-    RotateRight(135);
+    RotateRight(90);
     MoveForward(10);
-  //Pickup dropped triball
+    RotateLeft(90);
+    MoveForward(10);
+  //Grab middle triball
     //Extend grabber arm
     RotateRight(180);
-  //Move towards side goal
-    MoveForward(10);
-
-  //Score second triball
-    //Raise grabber arm
-    MoveForward(2)
 
   //Other
     //????
