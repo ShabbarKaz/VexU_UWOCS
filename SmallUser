@@ -74,7 +74,7 @@ infeed : PORT4
 using namespace vex;
 
 void openWings(){
-  if(wings.position(turns) <= 4){
+  if(wings.position(turns) <= 3.25){
        Brain.Screen.print("open wings if");
      wings.spin(forward,120,percent);
   } 
@@ -104,6 +104,8 @@ void infeedSystemReverse(){
    Brain.Screen.print("infeed reverse ");
  infeedSystem.spin(reverse,95,percent);
 }
+
+
 
 
 int main() {
@@ -151,9 +153,9 @@ if (Controller.Axis1.position() > 0 && (Controller.Axis3.position() > 0 ||  Cont
 
 
     //set of if statments for the wings sepereate to allow for opening wings while moving
-    if (Controller.ButtonL2.pressing()) {
+    if (Controller.ButtonY.pressing()) {
       closeWings();
-    } else if (Controller.ButtonR2.pressing()) {
+    } else if (Controller.ButtonA.pressing()) {
       openWings();
     }else {
     wings.stop();
@@ -161,7 +163,7 @@ if (Controller.Axis1.position() > 0 && (Controller.Axis3.position() > 0 ||  Cont
 
     if (Controller.ButtonL1.pressing()){
       infeedSystemReverse();
-    } else if(Controller.ButtonR1.pressing()){
+    } else if(Controller.ButtonL2.pressing()){
       infeedSystemForward();
     }else{ 
       infeedSystem.setStopping(brake);
@@ -169,9 +171,9 @@ if (Controller.Axis1.position() > 0 && (Controller.Axis3.position() > 0 ||  Cont
     }
 
     if(Controller.ButtonR1.pressing()){
-      scoop.spin(forward, 50, percent);
+      scoop.spin(forward, 35, percent);
     } else if (Controller.ButtonR2.pressing()){
-      scoop.spin(reverse, 50, percent);
+      scoop.spin(reverse, 35, percent);
     } else {
       scoop.stop();
     }
