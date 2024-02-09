@@ -151,9 +151,9 @@ if (Controller.Axis1.position() > 0 && (Controller.Axis3.position() > 0 ||  Cont
 
     //scoop code
     if(Controller.ButtonR1.pressing()){
-      scoop.spin(forward, 50, percent);
+      scoop.spin(forward, 35, percent);
     } else if (Controller.ButtonR2.pressing()){
-      scoop.spin(reverse, 50, percent);
+      scoop.spin(reverse, 35, percent);
     } else {
       scoop.stop();
     }
