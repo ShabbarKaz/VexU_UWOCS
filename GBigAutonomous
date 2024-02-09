@@ -1,0 +1,182 @@
+#pragma region VEXcode Generated Robot Configuration
+// Make sure all required headers are included.
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+
+#include "vex.h"
+
+using namespace vex;
+
+// Brain should be defined by default
+brain Brain;
+
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+
+
+// Robot configuration code.
+
+
+
+
+// Helper to make playing sounds from the V5 in VEXcode easier and
+// keeps the code cleaner by making it clear what is happening.
+void playVexcodeSound(const char *soundName) {
+  printf("VEXPlaySound:%s\n", soundName);
+  wait(5, msec);
+}
+
+#pragma endregion VEXcode Generated Robot Configuration
+#pragma endregion VEXcode Generated Robot Configuration
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+#include "vex.h"
+
+using namespace vex;
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+
+// void playVexcodeSound(const char *soundName) {
+//   printf("VEXPlaySound:%s\n", soundName);
+//   wait(5, msec);
+// }
+
+controller Controller = controller(primary);
+
+motor left_motor1 = motor(PORT1, ratio18_1, false);
+motor left_motor2 = motor(PORT8, ratio18_1, false);
+motor_group left_motors = motor_group(left_motor1, left_motor2);
+motor right_motor1 = motor(PORT2, ratio18_1, true);
+motor right_motor2 = motor(PORT9, ratio18_1, true);
+motor_group right_motors = motor_group(right_motor1, right_motor2);
+drivetrain all_motors = drivetrain(left_motors, right_motors, 319.19, 292.1, 254, mm, 0.428571429);
+motor catapult = motor(PORT17, ratio18_1,true );
+motor arm = motor(PORT20, ratio18_1, false);
+gps GPS = gps(PORT8, 80.00, -240.00, mm, 180);
+
+void calibrateDrivetrain() {
+  wait(200, msec);
+  Brain.Screen.print("Calibrating");
+  Brain.Screen.newLine();
+  Brain.Screen.print("GPS");
+  GPS.calibrate();
+  while (GPS.isCalibrating()) {
+    wait(25, msec);
+  }
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+}
+
+void Catapult_Activate(){
+   catapult.spin(forward,100,percent);
+}
+void Catapult_Deactivate() {
+  catapult.stop();
+}
+
+void Arm_Raise() {
+  arm.spinTo(-1, deg);
+  arm.stop();
+}
+void Arm_Lower() {
+  arm.spinTo(260, deg);
+  arm.stop();
+}
+
+
+void Wheels_MoveForward(int length, int speed, bool waitfor) { 
+  all_motors.driveFor(reverse,length,inches,speed,rpm,waitfor); 
+}
+void Wheels_MoveBackward(int length, int speed, bool waitfor) { 
+  all_motors.driveFor(forward,length,inches,speed,rpm,waitfor); 
+}
+void Wheels_RotateLeft(int deg, int speed, bool waitfor) { 
+  all_motors.turnFor(left,deg,degrees,speed,rpm,waitfor); 
+}
+void Wheels_RotateRight(int deg, int speed, bool waitfor) { 
+  all_motors.turnFor(right,deg,degrees,speed,rpm,waitfor); 
+}
+void Wheels_Stop() { 
+  all_motors.stop(); 
+}
+
+void autonomous_code() {
+  // Wheels_MoveForward(28,143,true);
+
+  // Wheels_RotateRight(15 * (232.0/365),30,true);
+  // Catapult_Activate();
+  // wait(1850,msec);
+  // Catapult_Deactivate();
+
+  // //Disrupt Middle triballs
+  // Wheels_RotateRight(75 * (232.0/365),100,true);
+  // Wheels_MoveForward(10,143,true);
+  // Wheels_RotateRight(30 * (232.0/365),100,true);
+  // Arm_Lower();
+  // Wheels_RotateLeft(212 * (232.0/365),100,true);
+  // Wheels_MoveForward(8,143,false);
+  // Arm_Raise();
+
+  // // Move to alliance triball
+  // Wheels_RotateLeft(50 * (232.0/365),100,true);
+  // // Wheels_RotateLeft(70 * (232.0/365),100,true);
+  // // Wheels_MoveForward(5,143,true); //47
+  // // Wheels_RotateRight(23 * (232.0/365),100,true);
+  // Wheels_MoveForward(25,143,true);
+
+  // Grab alliance triball
+  Arm_Lower();
+  Wheels_MoveBackward(20,35,true);
+  Wheels_MoveForward(6, 35, true);
+  Wheels_MoveBackward(10, 35, true);
+  Arm_Raise();
+  Wheels_RotateRight(30 * (232.0/365),30,true);
+  Wheels_MoveForward(1,35,true);
+  Arm_Lower();
+  Wheels_RotateLeft(35 * (232.0/365),25,true);
+  Wheels_MoveForward(2,35,true);
+  Wheels_RotateLeft(75 * (232.0/365),150,true);
+
+  //Move to the pole
+  Arm_Raise();
+  Wheels_RotateRight(225 * (232.0/365),150,true);
+  Wheels_MoveForward(15,100,true);
+  Wheels_RotateLeft(90 * (232.0/365),150,true);
+  arm.spinTo(65, deg);
+  arm.stop();
+
+}
+
+int main(){
+
+  autonomous_code();
+
+  // Major Requirement #1
+
+  // Assuming that we are facing the right spot at the right spot in the corner of the field
+  
+  return 0;
+}
