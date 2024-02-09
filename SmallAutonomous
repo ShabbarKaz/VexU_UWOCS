@@ -1,0 +1,187 @@
+#pragma region VEXcode Generated Robot Configuration
+// Make sure all required headers are included.
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+
+#include "vex.h"
+
+using namespace vex;
+
+// Brain should be defined by default
+brain Brain;
+
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+
+
+// Robot configuration code.
+
+
+
+
+// Helper to make playing sounds from the V5 in VEXcode easier and
+// keeps the code cleaner by making it clear what is happening.
+void playVexcodeSound(const char *soundName) {
+  printf("VEXPlaySound:%s\n", soundName);
+  wait(5, msec);
+}
+
+#pragma endregion VEXcode Generated Robot Configuration
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+#include "vex.h"
+
+using namespace vex;
+
+// Brain should be defined by default
+
+controller Controller = controller(primary);
+motor left_motor = motor(PORT1, ratio18_1, false);
+motor right_motor = motor(PORT2, ratio18_1, true);
+drivetrain all_motors = drivetrain(left_motor, right_motor, 319.19, 279.4, 152.4, mm, 0.714285714);;
+motor infeed_motor = motor(PORT4, ratio18_1,true); 
+motor arm = motor(PORT7, ratio18_1,true);
+
+gps GPS = gps(PORT8, 80.00, -240.00, mm, 180);
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+void calibrateDrivetrain() {
+  wait(200, msec);
+  Brain.Screen.print("Calibrating");
+  Brain.Screen.newLine();
+  Brain.Screen.print("GPS");
+  GPS.calibrate();
+  while (GPS.isCalibrating()) {
+    wait(25, msec);
+  }
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+}
+
+// Brain methods
+void Brain_Print() { Brain.Screen.print("X"); }
+
+void Arm_Raise() {
+  arm.spinTo(370, deg,false);
+  wait(1,seconds);
+  arm.stop();
+}
+void Arm_Lower() {
+  arm.spinTo(-530, deg);
+  arm.stop();
+  wait(1, seconds);
+}
+
+// Infeed methods
+void Infeed_Collect(){ 
+  infeed_motor.spin(forward,95,percent); 
+}
+void Infeed_Release(){ 
+  infeed_motor.spin(reverse,95,percent);
+}
+void Infeed_Stop() { 
+  infeed_motor.stop(); 
+}
+
+void Wheels_MoveForward(int length, double speed, bool waitfor) { 
+  left_motor.setVelocity(125*speed,rpm);
+  right_motor.setVelocity(130*speed,rpm);
+  all_motors.driveFor(forward,length,inches,waitfor); 
+}
+void Wheels_MoveBackward(int length, double speed, bool waitfor) { 
+  left_motor.setVelocity(100*speed,rpm);
+  right_motor.setVelocity(100*speed,rpm);
+  all_motors.driveFor(reverse,length,inches,waitfor); 
+}
+void Wheels_RotateLeft(int length, double speed, bool waitfor) { 
+  all_motors.turnFor(left,length*(325.0/365),degrees,speed*100,rpm,waitfor); 
+}
+void Wheels_RotateRight(int length, double speed, bool waitfor) { 
+  all_motors.turnFor(right,length*(325.0/365),degrees,speed*100,rpm,waitfor); 
+}
+void Wheels_Stop() { 
+  all_motors.stop(); 
+}
+
+void autonomous_code() {
+    Arm_Raise();
+    // Move to other side
+    Wheels_MoveBackward(5,1,true);
+    Wheels_MoveBackward(25,1,true);
+    Wheels_MoveBackward(25,1,true);
+    Wheels_RotateRight(150,1,true);
+    Wheels_MoveForward(16,1,true);
+
+    // Rotate towards net
+    Wheels_RotateLeft(45,1,true);
+    Wheels_MoveForward(13,1,true);
+
+    // Put triball into net
+    Infeed_Release();
+    wait(1,seconds);
+    Infeed_Stop();
+
+    // Move to right spot in the corner
+    Wheels_MoveBackward(8,1,true);
+    Wheels_RotateLeft(90,1,true);
+    Wheels_MoveForward(15,1,true);
+    Wheels_RotateLeft(135,1,true);
+    Wheels_MoveForward(16,1,true);
+
+    // Grab triball
+      Arm_Lower();
+      wait(500,msec);
+      Wheels_MoveBackward(20,.5,true);
+      Arm_Raise();
+      Infeed_Collect();
+      Wheels_MoveForward(15,1,true);
+      Infeed_Stop();
+
+    // // Rotate and move towards net
+    // Wheels_RotateLeft(45,1,true);
+    // Wheels_MoveForward(15,1,true);
+
+    // // Put alliance triball into net
+    // Infeed_Release();
+    // wait(1,seconds);
+    // Infeed_Stop();
+
+    // // Move backward from the net
+    // Wheels_MoveBackward(2,1,true);
+    // Wheels_RotateLeft(120,1,true);
+
+    // Move towards pole
+    // Wheels_MoveForward(25,1,true);
+    // arm.spinTo(200, deg); 
+    // arm.stop()
+
+  
+}
+
+int main() {
+  autonomous_code();
+  return 0;
+}
