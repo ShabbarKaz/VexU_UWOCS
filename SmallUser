@@ -26,8 +26,8 @@ brain Brain;
 
 // Robot configuration code.
 controller Controller = controller(primary);
-motor left_motor1 = motor(PORT1, ratio18_1, false);
-motor right_motor1 = motor(PORT2, ratio18_1, true);
+motor left_motor1 = motor(PORT2, ratio18_1, false);
+motor right_motor1 = motor(PORT1, ratio18_1, true);
 motor wings =  motor(PORT3, ratio18_1,true);
 motor infeedSystem = motor(PORT4, ratio18_1,true);
 motor scoop = motor(PORT7, ratio18_1,true);
