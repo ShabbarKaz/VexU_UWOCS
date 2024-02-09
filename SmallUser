@@ -1,0 +1,181 @@
+#pragma region VEXcode Generated Robot Configuration
+// Make sure all required headers are included.
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+#include "vex.h"
+
+using namespace vex;
+
+// Brain should be defined by default
+brain Brain;
+
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+
+// Robot configuration code.
+controller Controller = controller(primary);
+motor left_motor1 = motor(PORT1, ratio18_1, false);
+motor right_motor1 = motor(PORT2, ratio18_1, true);
+motor wings =  motor(PORT3, ratio18_1,true);
+motor infeedSystem = motor(PORT4, ratio18_1,true);
+motor scoop = motor(PORT7, ratio18_1,true);
+
+// Helper to make playing sounds from the V5 in VEXcode easier and
+// keeps the code cleaner by making it clear what is happening.
+void playVexcodeSound(const char *soundName) {
+  printf("VEXPlaySound:%s\n", soundName);
+  wait(5, msec);
+}
+
+
+
+// define variable for remote controller enable/disable
+bool RemoteControlCodeEnabled = true;
+
+#pragma endregion VEXcode Generated Robot Configuration
+
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       {author}                                                  */
+/*    Created:      {date}                                                    */
+/*    Description:  V5 project                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+ Wiring guide robot 1 :
+left motor : PORT1
+right motor: PORT2 
+wings: PORT3
+infeed : PORT4 
+
+---------------------------------------------------------------------------------*/
+
+
+
+
+// Include the V5 Library
+#include "vex.h"
+  
+// Allows for easier use of the VEX Library
+using namespace vex;
+
+void openWings(){
+  if(wings.position(turns) <= 4){
+       Brain.Screen.print("open wings if");
+     wings.spin(forward,120,percent);
+  } 
+  else {
+    Brain.Screen.print("open wings else");
+     wings.spin(forward,0,percent);
+  }
+}
+
+void closeWings(){
+       Brain.Screen.print("close wings if");
+   if(wings.position(turns) > 0 ){
+     wings.spin(reverse,120,percent);
+  } 
+  else {
+     Brain.Screen.print("close wings else");
+     wings.spin(reverse,0,percent);
+  }
+}
+
+void infeedSystemForward(){
+   Brain.Screen.print("infeed forward ");
+ infeedSystem.spin(forward,95,percent);
+}
+
+void infeedSystemReverse(){
+   Brain.Screen.print("infeed reverse ");
+ infeedSystem.spin(reverse,95,percent);
+}
+
+
+int main() {
+  
+  bool catapultOn = false;
+  bool TakeTryBallIn = true; 
+
+while(true){
+if (Controller.Axis1.position() > 0 && (Controller.Axis3.position() > 0 ||  Controller.Axis3.position() < 0))
+  {
+    Brain.Screen.print("diagnal movement");
+    right_motor1.spin(reverse,Controller.Axis3.position() * (115 - Controller.Axis1.position()) * 0.01,percent);
+    left_motor1.spin(reverse,Controller.Axis3.position(),percent);
+  }
+  else if (Controller.Axis1.position() < 0 && (Controller.Axis3.position() > 0 ||  Controller.Axis3.position() < 0))
+  {
+    Brain.Screen.print("diagnal movement");
+    left_motor1.spin(reverse,Controller.Axis3.position() * (115 + Controller.Axis1.position()) * 0.01,percent);
+    right_motor1.spin(reverse,Controller.Axis3.position(),percent);
+    
+  }
+//forwads and backwards
+  else if(Controller.Axis3.position() > 0 || Controller.Axis3.position() < 0 ){
+    Brain.Screen.print("forward and back  movement");
+   right_motor1.spin(reverse,Controller.Axis3.position(),percent);
+   left_motor1.spin(reverse,Controller.Axis3.position(),percent);
+ }
+
+ //move left and right 
+
+ else if(Controller.Axis1.position() > 0 ||  Controller.Axis1.position() < 0 ){
+    Brain.Screen.print("left and right movement");
+     right_motor1.spin(forward,Controller.Axis1.position(),percent);
+   left_motor1.spin(reverse,Controller.Axis1.position(),percent);
+ }
+       else {
+    left_motor1.setStopping(brake);
+    right_motor1.setStopping(brake);
+    wings.setStopping(hold);
+    left_motor1.stop();
+    right_motor1.stop();
+    }
+
+/////////////////////////////////////////////////////////////////
+
+
+    //set of if statments for the wings sepereate to allow for opening wings while moving
+    if (Controller.ButtonL2.pressing()) {
+      closeWings();
+    } else if (Controller.ButtonR2.pressing()) {
+      openWings();
+    }else {
+    wings.stop();
+    }
+
+    if (Controller.ButtonL1.pressing()){
+      infeedSystemReverse();
+    } else if(Controller.ButtonR1.pressing()){
+      infeedSystemForward();
+    }else{ 
+      infeedSystem.setStopping(brake);
+      infeedSystem.stop();
+    }
+
+    if(Controller.ButtonR1.pressing()){
+      scoop.spin(forward, 50, percent);
+    } else if (Controller.ButtonR2.pressing()){
+      scoop.spin(reverse, 50, percent);
+    } else {
+      scoop.stop();
+    }
+//////////////////////////////////////////////////////////////////////
+  }
+   return 0; 
+}
